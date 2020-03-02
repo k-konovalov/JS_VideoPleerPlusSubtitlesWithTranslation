@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Локальный просмотр английских видео с субтитрами и переводом</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/flowplayer.js"></script>
+		<script src="js/script-clean.js"></script>
+    </head>
+<body>
+	<div class="container containerBecomeWhite">
+	<div id="player_wrapper" class=""></div>
+		<div id="new_place_for_subtitles"></div>
+		<div id="player_widgets" class="hide">
+			<div id="urban-data"></div>
+			<h3>Список незнакомых слов:</h3>
+			<div class="tabbable span12 center">
+				<div class="tab-content">
+					<div class="tab-pane active" id="tab_new_words">
+						<div class="pull-right">
+							<a class="btn btn-small hide btn-success" id="copy_words">Скопировать все</a>
+							<a class="btn btn-small hide btn-success" id="clear_new_words" >Очистить</a>
+						</div>
+						<p id="words_list"></p>
+					</div>
+				</div> <!-- tab-content -->
+			</div> <!-- tabbable -->
+			<p id="btnChangeVideo" class="text-center" style="display: none;">
+				<a class="btn btn-large btn-success" >Выбор новых файлов</a>
+			</p>
+			<p id="btnChangeVideo-2" class="text-center" style="display: none;">
+				<a class="btn btn-large btn-success" >Выбор новых файлов</a>
+			</p>
+		</div> <!-- player_widgets -->
+		<div class="first_buttons">
+			<label>
+				<strong>Выберите свою платформу:</strong>
+			</label>
+			<p id="pIfPc" class="text-center">
+				<a class="btn btn-large btn-success" >Компьютер</a>
+			</p>
+			<p id="pIfMobile" class="text-center">
+				<a class="btn btn-large btn-success" >Android</a>
+			</p>
+		</div>
+		<div class='form_wrapper span10 center for_pc' id="form_wrapper">
+			<div class="b-input">
+				<label>
+					<strong>Видео</strong>
+				</label>
+				<div class="input-append">
+				  <input type="text" name="video_src" class="span6" value="" placeholder="Прямая ссылка на видео">
+				  <span class="btn btn-file">
+					  <span class="fileupload-new">Открыть локальный файл</span>
+					  <input type="file" name="local_video"/>
+				  </span>
+				</div>
+				<label>
+					<strong>Субтитры</strong>
+				</label>
+				<div class="input-append">
+				  <input type="text" name="subs_file" id="subs_url" class="span6" value="" placeholder="Прямая ссылка на видео">
+				  <span class="btn btn-file">
+					  <span class="fileupload-new">Открыть субтитры</span>
+					  <input type="file" name="subs_file"/>
+				  </span>
+				</div>
+			</div>
+			<p id="subs_upload_process" class="hide"><img src="img/loader.gif" /></p>
+			<p id="subs_upload_result" class="hide"></p>
+			<p class="text-center">
+				<a id="submit-btn" class="btn btn-large btn-success">Смотреть</a>
+			</p>
+		</div> <!-- Form for PC-->
+		<div class='form_wrapper span10 center for_mobile' id="form_wrapper">
+			<div class="b-input">
+				<div class="input-append">
+				  <input type="text" name="local_video_mobile" class="span6" value="" placeholder="Прямая ссылка на видео" readonly>
+				<input type="text" name="subs_file_mobile" id="subs_url" class="span6" value="" placeholder="Прямая ссылка на субтитры" readonly>
+				<span class="fileupload-new">Открыть локальный файл</span>
+				  </span>
+				</div>
+			</div>
+			<p id="subs_upload_process" class="hide"><img src="img/loader.gif" /></p>
+			<p id="subs_upload_result" class="hide"></p>
+			<p class="text-center">
+				<a id="submit-btn-2" class="btn btn-large btn-success">Смотреть</a>
+			</p>
+		</div> <!-- Form for Mobile -->
+		<div class="footer" style="width:100%;border-top:rgba(128, 128, 128, 0.1) solid 1px;">
+		<p style="text-align: center; color: black;width:100%;"><a style="color: black;" href="http://translate.yandex.ru/" >«Переведено сервисом «Яндекс.Переводчик»<a/></p>
+		<div>
+	</div>
+</body>
+</html>
