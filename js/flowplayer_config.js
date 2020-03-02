@@ -118,7 +118,7 @@ flowplayer(
 				})
 		});
 
-		//Actions with subtitles state
+		//Init actions with subtitles state
 		$(".fp-subtitle").on("mouseenter", function(event) {
 			if (!api.paused) {
 				api.pause();

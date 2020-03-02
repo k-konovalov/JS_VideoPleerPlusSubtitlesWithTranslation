@@ -132,6 +132,8 @@ function init_player_ui() {
 		if ($(this).hasClass("ui_less")) step = -step;
 		change_subs_position(step)
 	});
+
+	//$("#player_ui_wrapper").slideDown(); настройки скрыты
 	$("#player_ui_wrapper").hide()
 }
 
@@ -170,7 +172,7 @@ function check_video_type() {
 
 function generate_player_code(video_src,video_type, subs_url) {
 	var res = '<div class="myplayer is-splash play-white">' + "\n";
-	res += "<video>\n" + '<source src="' + video_src + '" type="video/mp4" />' + "\n";
+	res += "<video>\n" + '<source src="' + video_src + '" type="video/' + video_type + '"/>' + "\n";
 	res += '<track src="' + subs_url + '"/>' + "\n";
 	res += "</video>";
 	res += "</div><!--myplayer-->\n";
@@ -271,6 +273,7 @@ $(document).ready(function() {
 		$("#form_wrapper").css("display", "none");
 		$("#btnChangeVideo").css("display", "block");
 		$("#player_widgets").slideDown();
+
 		video_attrs.video_type = "mp4";
 		if ($("input[name=video_src]").val() !== "") {
 			video_attrs.video_src = $("input[name=video_src]").val();
@@ -278,6 +281,9 @@ $(document).ready(function() {
 		}
 		$player_wrapper = $("#player_wrapper");
 		$player_wrapper.html(generate_player_code(video_attrs.video_src, video_attrs.video_type, video_attrs.subs_url));
+		$player_wrapper.slideDown();
+		$player_wrapper.css('margin', '0 auto');
+
 		init_player_ui();
 		$('.fp-ui').click(function(event) {
 			var trueWhite = $('.container').hasClass('containerBecomeWhite');
@@ -301,86 +307,16 @@ $(document).ready(function() {
 			$video.attr("controls", true);
 			$video.css("width", "100%");
 			return
-		} else {
-			$(".myplayer").flowplayer({})
-		}
-		calculate_base_fontsize();
+		} else { $(".myplayer").flowplayer({})}
 		flowplayer.conf.subtitles_shift = 0;
 	});
-	$("#submit-btn-2").click(function(event) {
-		event.preventDefault();
-		if (flowplayer()) {
-			flowplayer().unload();
-			$(".myplayer").remove();
-			$("#player_ui_wrapper").hide()
-		}
-		if (check_video_type() == false) {
-			return
-		}
-		$("#form_wrapper").hide();
-		$("#btnChangeVideo-2").css("display", "block");
-		video_attrs.video_type = "mp4";
-		if ($("input[name=video_src]").val() !== "") {
-			video_attrs.video_src = $("input[name=video_src]").val();
-			video_attrs.subs_url = $("input[name=subs_file]").val();
-		}
-		if ($("input[name=video_src]").val() === "") {
-			video_attrs.video_src = $("input[name=local_video_mobile]").val();
-			video_attrs.subs_url = $("input[name=subs_file_mobile]").val();
-		}
-		$player_wrapper = $("#player_wrapper");
-		$player_wrapper.html(generate_player_code(video_attrs.video_src, video_attrs.video_type, video_attrs.subs_url));
-		init_player_ui();
-		$('.fp-ui').click(function(event) {
-			var trueWhite = $('.container').hasClass('containerBecomeWhite');
-			if (trueWhite === true) {
-				$('.container').removeClass('containerBecomeWhite');
-				$('.container').addClass('containerBecomeBlack');
-				console.log('black');
-			}
-			if (trueWhite === false) {
-				$('.container').removeClass('containerBecomeBlack');
-				$('.container').addClass('containerBecomeWhite');
-				console.log('white');;
-			}
-		});
-		if ($player_wrapper.hasClass("flash")) {
-			$(".myplayer").flowplayer({
-				engine: "flash"
-			})
-		} else if ($player_wrapper.hasClass("native")) {
-			$video = $("video");
-			$video.attr("controls", true);
-			$video.css("width", "100%");
-			return
-		} else {
-			$(".myplayer").flowplayer({})
-		}
-		calculate_base_fontsize();
-		flowplayer.conf.subtitles_shift = 0;
-		/* $("#player_ui_wrapper").slideDown(); */
-		$("#player_widgets").slideDown();
-		$("#ui_translation_font input").trigger("change");
-		$("#ui_subtitles_font input").trigger("change");
-		$("#player_wrapper").css('width', '100%');
-		var oldSubtitleWrap = $(".fp-subtitle-wrap").html();
-		/* $(".fp-subtitle-wrap").remove();*/
-		$("#new_place_for_subtitles").append(oldSubtitleWrap);
-		$(".translation")[0].remove();
-		$(".fp-fullscreen")[0].remove();
-		$(".fp-time")[0].remove();
-		$(".fp-controls")[0].remove();
-		$(".fp-help")[0].remove();
-	});
-	$("#player_ui_wrapper").slideDown(); 
+	
 	$("#ui_translation_font input").trigger("change");
 	$("#ui_subtitles_font input").trigger("change");
-	$("#player_wrapper").css('margin', '0 auto');
 	$(".fp-fullscreen").click(function(event) {
 		$(".fp-engine").css('max-height', '100%');
 		$(".fp-engine").css('top', '-30px');
 	});
-	
 	$("#clear_new_words").click(function(event) {
 		event.preventDefault();
 		new_words = {};
@@ -390,27 +326,8 @@ $(document).ready(function() {
 	$("#btnChangeVideo").click(function(event) {
 		$("#form_wrapper").slideDown();
 	});
-	$("#btnChangeVideo-2").click(function(event) {
-		$("#form_wrapper").slideDown();
-	});
-	$("#pIfPc").click(function(event) {
-		$(".first_buttons").slideUp();
-		$(".for_pc").slideDown();
-	});
-	$("#pIfMobile").click(function(event) {
-		$(".first_buttons").slideUp();
-		$(".for_mobile").slideDown();
-	});	
 	$("#copy_words").click(function(event) {
 		var copyAll = $('#words_list').html();
 		prompt('Скопируйте слова ниже или Ctrl+C', copyAll)
-	});	
-	$("#change_video_and_sub").click(function(event) {
-		//*http://localhost:8080
-		var srcAll = prompt('Введите имя файла без расширения.') ;
-		var srcVideo = 'http://localhost:8080/' + srcAll + '.mp4';
-		var srcSub = 'http://localhost:8080/' + srcAll + '.srt';
-		$("input[name=local_video_mobile]").val(srcVideo);
-		$("input[name=subs_file_mobile]").val(srcSub);
 	});	
 });
