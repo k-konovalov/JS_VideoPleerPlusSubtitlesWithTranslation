@@ -805,6 +805,7 @@ label {
 	text-align: center;
 	width: 80%;
 	display: none;
+	margin: 0 auto;
 }
 #player_ui_border {
 	display: inline-block;
@@ -877,11 +878,8 @@ label {
 	display: none;
 	position: absolute;
 	bottom: 0px;
-	max-width: 15%;
 	overflow-y: auto;
 	overflow-x: hidden;
-	/*border: solid 2px #ccc;*/
-	/*background-color: #fff;*/
 	background-color:#ffffffe8;
 	padding: 5px 10px;
 	font-size: 100%;

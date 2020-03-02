@@ -127,19 +127,10 @@ flowplayer(
 		});
 		$(".fp-subtitle-wrap").on("mouseleave", function(event) {
 			var el = $(event.relatedTarget);
+			$(".translation").hide();
 			if (api.paused && api.paused_by_mouseenter && !(el.hasClass("fp-controls") || el.hasClass("fp-progress") || el.hasClass("fp-buffer") || el.hasClass("fp-timeline") || el.is("a"))) {
 				api.resume()
 			}
-		});
-		$(".fp-subtitle").on("mouseup", function(event) {
-			var text = $.trim(sel).replace(/[\r\n]/g, " ");
-			var sel = document.getSelection().toString();
-
-			if (event.which === 3 || !sel || !text) return;
-			remove_words_class("right-clicked");
-
-			add_new_words(text);
-			get_translation(text);
 		});
 		$(".fp-subtitle").on("mousedown", function(event) {
 			window.getSelection().removeAllRanges()
@@ -228,4 +219,42 @@ function update_elapsed_time_time(elapsed_time, video) {
 				notify("success_start", 4);
 				notify_success_start = 0
 	}
+}
+
+//Subtitles
+function resize_subtitle_wrap(factor) {
+	var h = $(".fp-subtitle-wrap").height();
+	var b = parseFloat($(".fp-subtitle").css("bottom"));
+	$(".fp-subtitle-wrap").height(h * factor);
+	$(".fp-subtitle").css("bottom", (b * factor).toString() + "px")
+}
+
+function add_new_words(text) {
+	var words = text.split(" ");
+		text = $.trim(text);
+			
+		if (words.length > 2) return;
+		if (words.length > 1) {
+			delete new_words[words[0]]
+		}
+		new_words[text] = 1;
+		new_words_len = Object.keys(new_words).length;
+		if (new_words_len % 20 === 0) {
+			notify(new_words_len + "_words_translated")
+			}
+		if (video_attrs.id !== "") {
+			localStorage.setItem("movie" + video_attrs.id, JSON.stringify(new_words))
+		}
+
+		print_new_words();
+}
+
+function print_new_words() {
+	var str_en = Object.keys(new_words).join(", ");
+	var str_ru = Object.keys(new_words).join(", ");
+	//$("#tab_new_words p").html(str_en ? str_en : "Список пуст.");
+	if (!$.isEmptyObject(new_words)) {
+		$("#clear_new_words").show();
+		$("#copy_words").show();
+	}	
 }
