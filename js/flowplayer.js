@@ -1449,218 +1449,222 @@ var new_words_ru = [];
 var video_attrs = {};
 
 flowplayer.conf = {
-embed: false,
-tooltip: false,
-base_fontsize: 18,
-subtitles_shift: 0,
-sub_opacity:.5,
-sub_position:0,
-volume: .5,
-elapsed_time_percent: .75
+	embed: false,
+	tooltip: false,
+	base_fontsize: 18,
+	subtitles_shift: 0,
+	sub_opacity:.5,
+	sub_position:0,
+	volume: .5,
+	elapsed_time_percent: .75
 };
 
-flowplayer(function(api, root) {
-	flowplayer.conf.player_width = $(".myplayer").width();
-	calculate_base_fontsize();
-	change_font_size_absolute(".fp-subtitle", api.conf.base_fontsize / flowplayer.conf.base_fontsize);
-	api.paused_by_mouseenter = false;
-	api.elapsed_time = {
-		enabled: true,
-		time: 0,
-		start: 0
-	};
-	var add_movie_tries_count = 0,
-		notify_success_start = 120;
-
-	function update_elapsed_time_time() {
-		if (!api.elapsed_time.enabled) return;
-		var interval = api.video.time - api.elapsed_time.start;
-		api.elapsed_time.time += interval > 0 ? interval : 0;
-		if (api.elapsed_time.time / api.video.duration > flowplayer.conf.elapsed_time_percent) {
-			if (video_attrs.id !== "") {
-				notify("coming_to_the_end");
-				api.elapsed_time.enabled = false
-			} else {
-				add_movie_to_lib(false, function(success) {
-					if (success) api.elapsed_time.enabled = false
-				});
-				if (++add_movie_tries_count >= 2) api.elapsed_time.enabled = false
-			}
-		}
-		if (notify_success_start && notify_success_start < api.elapsed_time.time) {
-			notify("success_start", 4);
-			notify_success_start = 0
-		}
-	}
-
-	function remove_words_class(css_class) {
-		$(".fp-subtitle ." + css_class).each(function() {
-			$(this).removeClass(css_class)
-		})
-	}
-
-	function remove_classes(classes) {
-		for (var i = 0, len = classes.length; i < len; i++) {
-			remove_words_class(classes[i])
-		}
-	}
-
-	function add_new_words(text) {
-		text = $.trim(text);
-		var words = text.split(" ");
-		if (words.length > 2) return;
-		if (words.length > 1) {
-			delete new_words[words[0]]
-		}
-		new_words[text] = 1;
-		new_words_len = Object.keys(new_words).length;
-		if (new_words_len % 20 === 0) {
-			notify(new_words_len + "_words_translated")
-		}
-		if (video_attrs.id !== "") {
-			localStorage.setItem("movie" + video_attrs.id, JSON.stringify(new_words))
-		}
-		print_new_words();
-	}
-	api.bind("fullscreen", function() {
-		var factor = $(window).width() / flowplayer.conf.player_width;
-		change_font_size_relative(".fp-subtitle", factor);
-		change_font_size_relative(".translation", factor);
-		resize_subtitle_wrap(factor)
-	});
-	api.bind("fullscreen-exit", function() {
-		var factor = flowplayer.conf.player_width / $(window).width();
-		change_font_size_relative(".fp-subtitle", factor);
-		change_font_size_relative(".translation", factor);
-		resize_subtitle_wrap(factor)
-	});
-	api.bind("resume", function() {
-		$(".flowplayer").removeClass("play-white");
-		$(".translation").hide();
-		remove_words_class("selected");
-		remove_words_class("pinned");
-		remove_words_class("right-clicked");
+flowplayer(
+	function(api, root) {
+		flowplayer.conf.player_width = $(".myplayer").width();
+		calculate_base_fontsize();
+		change_font_size_absolute(".fp-subtitle", api.conf.base_fontsize / flowplayer.conf.base_fontsize);
 		api.paused_by_mouseenter = false;
-		api.elapsed_time.start = api.video.time
-	});
-	api.bind("pause", function() {
-		update_elapsed_time_time()
-	});
-	api.bind("beforeseek", function() {
-		if (!api.paused) update_elapsed_time_time()
-	});
-	api.bind("seek", function() {
-		api.elapsed_time.start = api.video.time
-	});
-	api.bind("ready", function() {
-		api.volume(flowplayer.conf.volume);
-		if (typeof api.subtitles_src !== "undefined") {
-			var timer = setInterval(function() {
-				if (api.cuepoints.length > 0) {
-					clearInterval(timer);
-					$("#ui_subtitles_shift input").trigger("change")
+		api.elapsed_time = {
+			enabled: true,
+			time: 0,
+			start: 0
+		};
+		var add_movie_tries_count = 0,
+			notify_success_start = 120;
+
+		function update_elapsed_time_time() {
+			if (!api.elapsed_time.enabled) return;
+			var interval = api.video.time - api.elapsed_time.start;
+			api.elapsed_time.time += interval > 0 ? interval : 0;
+			if (api.elapsed_time.time / api.video.duration > flowplayer.conf.elapsed_time_percent) {
+				if (video_attrs.id !== "") {
+					notify("coming_to_the_end");
+					api.elapsed_time.enabled = false
+				} else {
+					add_movie_to_lib(false, function(success) {
+						if (success) api.elapsed_time.enabled = false
+					});
+					if (++add_movie_tries_count >= 2) api.elapsed_time.enabled = false
 				}
-			}, 1e3)
-		}
-		if (api.video.duration < 3900) {
-			api.elapsed_time.enabled = false;
-			return
-		}
-	});
-	api.bind("error", function(e, api, error) {
-		notify("Player error: " + error.message + ". Elapsed_time " + api.elapsed_time.time);
-		if (error.code > 4) return;
-		var error_buttons = '<div id="error_buttons">' + '<a href="#" id="err-btn-restart" class="btn btn-large btn-success">Перезапустить</a>';
-		error_buttons += '<a href="#" id="err-btn-close" class="btn btn-large btn-info">Закрыть</a>';
-		if (error.code == 2) {
-			if (window.location.href.indexOf("engine=flash") !== -1) {
-				error_buttons += "<div>Вернуться в html5-плеер:</div>";
-				error_buttons += '<a href="#" id="err-btn-html5" class="btn btn-info"><span>Открыть через html5-плеер</span></a>'
-			} else {
-				error_buttons += "<div>Если эта ошибка возникает очень часто и доставляет неудобства, попробуйте открыть это видео через flash-плеер:</div>";
-				error_buttons += '<a href="#" id="err-btn-flash" class="btn btn-info"><span>Открыть через flash-плеер</span></a>'
 			}
-		} else if (error.code == 3) {
-			error_buttons += "<div>В разделе &laquo;Помощь&raquo; описано решение для вашей проблемы :</div>";
-			error_buttons += '<a href="page/help#problems" class="btn btn-info"><span>Известные проблемы и решения</span></a>'
-		} else if (error.code == 4) {
-			error_buttons += "<div><strong>Возможные причины появления этой ошибки:</strong></div>";
-			error_buttons += "<ul><li>видеохостинг, с которого вы открыли видео, не поддерживается плеером</li><li>ссылка на видео устарела (в этом случае вам нужно заново открыть видео из каталога)</li>"
+			if (notify_success_start && notify_success_start < api.elapsed_time.time) {
+				notify("success_start", 4);
+				notify_success_start = 0
+			}
 		}
-		error_buttons += "</div>";
-		$("#error_buttons").remove();
-		$(".fp-message p").after(error_buttons);
-		$("#err-btn-restart").click(function(e) {
-			e.preventDefault();
-			$("#submit-btn").trigger("click")
+
+		function remove_words_class(css_class) {
+			$(".fp-subtitle ." + css_class).each(function() {
+				$(this).removeClass(css_class)
+			})
+		}
+
+		function remove_classes(classes) {
+			for (var i = 0, len = classes.length; i < len; i++) {
+				remove_words_class(classes[i])
+			}
+		}
+
+		function add_new_words(text) {
+			text = $.trim(text);
+			var words = text.split(" ");
+			if (words.length > 2) return;
+			if (words.length > 1) {
+				delete new_words[words[0]]
+			}
+			new_words[text] = 1;
+			new_words_len = Object.keys(new_words).length;
+			if (new_words_len % 20 === 0) {
+				notify(new_words_len + "_words_translated")
+			}
+			if (video_attrs.id !== "") {
+				localStorage.setItem("movie" + video_attrs.id, JSON.stringify(new_words))
+			}
+			print_new_words();
+		}
+
+		api.bind(
+			"fullscreen", function() {
+				var factor = $(window).width() / flowplayer.conf.player_width;
+				change_font_size_relative(".fp-subtitle", factor);
+				change_font_size_relative(".translation", factor);
+				resize_subtitle_wrap(factor)
+			},
+			"fullscreen-exit", function() {
+			var factor = flowplayer.conf.player_width / $(window).width();
+			change_font_size_relative(".fp-subtitle", factor);
+			change_font_size_relative(".translation", factor);
+			resize_subtitle_wrap(factor)
 		});
-		$("#err-btn-close").click(function(e) {
-			e.preventDefault();
-			api.fullscreen()
+		api.bind("resume", function() {
+			$(".flowplayer").removeClass("play-white");
+			$(".translation").hide();
+			remove_words_class("selected");
+			remove_words_class("pinned");
+			remove_words_class("right-clicked");
+			api.paused_by_mouseenter = false;
+			api.elapsed_time.start = api.video.time
 		});
-		$("#err-btn-flash").click(function(e) {
-			e.preventDefault();
-			var url = window.location.href;
-			url = url.replace(/\&engine=\w+/g, "");
-			window.location.href = url + "&engine=flash"
+		api.bind("pause", function() {
+			update_elapsed_time_time()
 		});
-		$("#err-btn-html5").click(function(e) {
-			e.preventDefault();
-			var url = window.location.href;
-			url = url.replace(/\&engine=\w+/g, "");
-			window.location.href = url + "&engine=html5"
+		api.bind("beforeseek", function() {
+			if (!api.paused) update_elapsed_time_time()
+		});
+		api.bind("seek", function() {
+			api.elapsed_time.start = api.video.time
+		});
+		api.bind("ready", function() {
+			api.volume(flowplayer.conf.volume);
+			if (typeof api.subtitles_src !== "undefined") {
+				var timer = setInterval(function() {
+					if (api.cuepoints.length > 0) {
+						clearInterval(timer);
+						$("#ui_subtitles_shift input").trigger("change")
+					}
+				}, 1e3)
+			}
+			if (api.video.duration < 3900) {
+				api.elapsed_time.enabled = false;
+				return
+			}
+		});
+		api.bind("error", function(e, api, error) {
+			notify("Player error: " + error.message + ". Elapsed_time " + api.elapsed_time.time);
+			if (error.code > 4) return;
+			var error_buttons = '<div id="error_buttons">' + '<a href="#" id="err-btn-restart" class="btn btn-large btn-success">Перезапустить</a>';
+			error_buttons += '<a href="#" id="err-btn-close" class="btn btn-large btn-info">Закрыть</a>';
+			if (error.code == 2) {
+				if (window.location.href.indexOf("engine=flash") !== -1) {
+					error_buttons += "<div>Вернуться в html5-плеер:</div>";
+					error_buttons += '<a href="#" id="err-btn-html5" class="btn btn-info"><span>Открыть через html5-плеер</span></a>'
+				} else {
+					error_buttons += "<div>Если эта ошибка возникает очень часто и доставляет неудобства, попробуйте открыть это видео через flash-плеер:</div>";
+					error_buttons += '<a href="#" id="err-btn-flash" class="btn btn-info"><span>Открыть через flash-плеер</span></a>'
+				}
+			} else if (error.code == 3) {
+				error_buttons += "<div>В разделе &laquo;Помощь&raquo; описано решение для вашей проблемы :</div>";
+				error_buttons += '<a href="page/help#problems" class="btn btn-info"><span>Известные проблемы и решения</span></a>'
+			} else if (error.code == 4) {
+				error_buttons += "<div><strong>Возможные причины появления этой ошибки:</strong></div>";
+				error_buttons += "<ul><li>видеохостинг, с которого вы открыли видео, не поддерживается плеером</li><li>ссылка на видео устарела (в этом случае вам нужно заново открыть видео из каталога)</li>"
+			}
+			error_buttons += "</div>";
+			$("#error_buttons").remove();
+			$(".fp-message p").after(error_buttons);
+			$("#err-btn-restart").click(function(e) {
+				e.preventDefault();
+				$("#submit-btn").trigger("click")
+			});
+			$("#err-btn-close").click(function(e) {
+				e.preventDefault();
+				api.fullscreen()
+			});
+			$("#err-btn-flash").click(function(e) {
+				e.preventDefault();
+				var url = window.location.href;
+				url = url.replace(/\&engine=\w+/g, "");
+				window.location.href = url + "&engine=flash"
+			});
+			$("#err-btn-html5").click(function(e) {
+				e.preventDefault();
+				var url = window.location.href;
+				url = url.replace(/\&engine=\w+/g, "");
+				window.location.href = url + "&engine=html5"
+			})
+		});
+
+		$(".fp-subtitle").on("mouseenter", function(event) {
+			if (!api.paused) {
+				api.pause();
+				api.paused_by_mouseenter = true
+			}
+		});
+		$(".fp-subtitle-wrap").on("mouseleave", function(event) {
+			var el = $(event.relatedTarget);
+			if (api.paused && api.paused_by_mouseenter && !(el.hasClass("fp-controls") || el.hasClass("fp-progress") || el.hasClass("fp-buffer") || el.hasClass("fp-timeline") || el.is("a"))) {
+				api.resume()
+			}
+		});
+		$(".fp-subtitle").on("mousedown", function(event) {
+			window.getSelection().removeAllRanges()
+		});
+		$(".fp-subtitle").on("click", "span", function(event) {
+			sel = document.getSelection().toString();
+			if (sel) return;
+			text = $(this).text();
+			add_new_words(text);
+			get_translation(text);
+			/*change*/
+		});
+		$(".fp-subtitle").on("mouseup", function(event) {
+			if (event.which === 3) return;
+			remove_words_class("right-clicked");
+			var sel = document.getSelection().toString();
+			if (!sel) return;
+			var text = $.trim(sel).replace(/[\r\n]/g, " ");
+			if (!text) return;
+			add_new_words(text);
+			get_translation(text);
+		});
+		$(".fp-subtitle").on("contextmenu", "span", function(event) {
+			event.stopPropagation();
+			event.preventDefault();
+			var span = $(this);
+			span.toggleClass("right-clicked");
+			if (!span.hasClass("right-clicked")) return;
+			var text = "";
+			$(".fp-subtitle .right-clicked").each(function() {
+				text += $(this).text() + " "
+			});
+			add_new_words(text);
+			get_translation(text);
+		});
+		$(".fp-subtitle").on("contextmenu", function(event) {
+			event.stopPropagation()
 		})
-	});
-	$(".fp-subtitle").on("mouseenter", function(event) {
-		if (!api.paused) {
-			api.pause();
-			api.paused_by_mouseenter = true
-		}
-	});
-	$(".fp-subtitle-wrap").on("mouseleave", function(event) {
-		var el = $(event.relatedTarget);
-		if (api.paused && api.paused_by_mouseenter && !(el.hasClass("fp-controls") || el.hasClass("fp-progress") || el.hasClass("fp-buffer") || el.hasClass("fp-timeline") || el.is("a"))) {
-			api.resume()
-		}
-	});
-	$(".fp-subtitle").on("mousedown", function(event) {
-		window.getSelection().removeAllRanges()
-	});
-	$(".fp-subtitle").on("click", "span", function(event) {
-		sel = document.getSelection().toString();
-		if (sel) return;
-		text = $(this).text();
-		add_new_words(text);
-		get_translation(text);
-		/*change*/
-	});
-	$(".fp-subtitle").on("mouseup", function(event) {
-		if (event.which === 3) return;
-		remove_words_class("right-clicked");
-		var sel = document.getSelection().toString();
-		if (!sel) return;
-		var text = $.trim(sel).replace(/[\r\n]/g, " ");
-		if (!text) return;
-		add_new_words(text);
-		get_translation(text);
-	});
-	$(".fp-subtitle").on("contextmenu", "span", function(event) {
-		event.stopPropagation();
-		event.preventDefault();
-		var span = $(this);
-		span.toggleClass("right-clicked");
-		if (!span.hasClass("right-clicked")) return;
-		var text = "";
-		$(".fp-subtitle .right-clicked").each(function() {
-			text += $(this).text() + " "
-		});
-		add_new_words(text);
-		
-		get_translation(text);
-	});
-	$(".fp-subtitle").on("contextmenu", function(event) {
-		event.stopPropagation()
-	})
-});
+	}
+);
 
 //END Flowplayer
