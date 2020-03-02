@@ -132,6 +132,16 @@ flowplayer(
 				api.resume()
 			}
 		});
+		$(".fp-subtitle").on("mouseup", function(event) {
+		if (event.which === 3) return;
+		remove_words_class("right-clicked");
+		var sel = document.getSelection().toString();
+		if (!sel) return;
+		var text = $.trim(sel).replace(/[\r\n]/g, " ");
+		if (!text) return;
+		add_new_words(text);
+		get_translation(text);
+	});
 		$(".fp-subtitle").on("mousedown", function(event) {
 			window.getSelection().removeAllRanges()
 		});
@@ -144,6 +154,7 @@ flowplayer(
 			get_translation(text);
 			/*change*/
 		});
+
 		$(".fp-subtitle").on("contextmenu", "span", function(event) {
 			var span = $(this);
 			var text = "";
