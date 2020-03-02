@@ -4837,10 +4837,7 @@ a.label:hover, a.label:focus, a.badge:hover, a.badge:focus {
 		background-image: url(img/play_black_rtl@x2.png)
 	}
 }
-.play-white.flowplayer .fp-ui {
-	background: url(img/play_white.png) center no-repeat !important;
-	background-size: 12%;
-}
+
 @media (-webkit-min-device-pixel-ratio:2) {
 	.play-white.flowplayer .fp-ui {
 		background: url(img/play_white@x2.png) center no-repeat !important;

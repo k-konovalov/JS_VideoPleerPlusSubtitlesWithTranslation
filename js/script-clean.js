@@ -1,17 +1,21 @@
-function calculate_base_fontsize() {
-	var fullscreen_fontsize = 42 / 1080 * screen.height;
-	flowplayer.conf.base_fontsize = fullscreen_fontsize * ($(".myplayer").height() / screen.height)
-}
+function add_new_words(text) {
+	var words = text.split(" ");
+		text = $.trim(text);
+			
+		if (words.length > 2) return;
+		if (words.length > 1) {
+			delete new_words[words[0]]
+		}
+		new_words[text] = 1;
+		new_words_len = Object.keys(new_words).length;
+		if (new_words_len % 20 === 0) {
+			notify(new_words_len + "_words_translated")
+			}
+		if (video_attrs.id !== "") {
+			localStorage.setItem("movie" + video_attrs.id, JSON.stringify(new_words))
+		}
 
-function change_font_size_absolute(selector, factor) {
-	var new_size = (parseFloat(flowplayer.conf.base_fontsize) * factor).toString() + "px";
-	$(selector).css("font-size", new_size)
-}
-
-function change_font_size_relative(selector, factor) {
-	var size = $(selector).css("font-size");
-	var new_size = (parseFloat(size) * factor).toString() + "px";
-	$(selector).css("font-size", new_size)
+		print_new_words();
 }
 
 function resize_subtitle_wrap(factor) {
@@ -38,8 +42,7 @@ function shift_subtitles(time) {
 		set_time(player_obj.cuepoints[i + 1], "time", shift)
 	}
 	flowplayer.conf.subtitles_shift += shift
-}
-
+};
 function change_subs_opacity(step) {
 	var obj = $(".fp-subtitle"),
 		opacity = parseFloat($(".fp-subtitle").css("background-color").split(",")[3]);
@@ -237,13 +240,12 @@ function hide_yandex(){
 };
 
 $(document).ready(function() {
-	
 	$("#subs_upload_submit").click(function(event) {
 		$("#subs_upload_process").show()
 	});
 	$("input[name=subs_file]").change(function() {
 		if (this.files[0].size > 4e5) {
-			stop_upload(1, "Слишком большой файл. Максимальный размер &mdash; 400 Кб");
+			stop_upxload(1, "Слишком большой файл. Максимальный размер &mdash; 400 Кб");
 			return
 		}
 		var src = window.URL.createObjectURL(this.files[0]);
@@ -268,14 +270,11 @@ $(document).ready(function() {
 		}
 		$("#form_wrapper").css("display", "none");
 		$("#btnChangeVideo").css("display", "block");
+		$("#player_widgets").slideDown();
 		video_attrs.video_type = "mp4";
 		if ($("input[name=video_src]").val() !== "") {
 			video_attrs.video_src = $("input[name=video_src]").val();
 			video_attrs.subs_url = $("input[name=subs_file]").val();
-		}
-		if ($("input[name=video_src]").val() === "") {
-			video_attrs.video_src = $("input[name=local_video_mobile]").val();
-			video_attrs.subs_url = $("input[name=subs_file_mobile]").val();
 		}
 		$player_wrapper = $("#player_wrapper");
 		$player_wrapper.html(generate_player_code(video_attrs.video_src, video_attrs.video_type, video_attrs.subs_url));
@@ -307,15 +306,6 @@ $(document).ready(function() {
 		}
 		calculate_base_fontsize();
 		flowplayer.conf.subtitles_shift = 0;
-$("#player_ui_wrapper").slideDown(); 
-		$("#player_widgets").slideDown();
-		$("#ui_translation_font input").trigger("change");
-		$("#ui_subtitles_font input").trigger("change");
-		$("#player_wrapper").css('margin', '0 auto');
-		$(".fp-fullscreen").click(function(event) {
-			$(".fp-engine").css('max-height', '100%');
-			$(".fp-engine").css('top', '-30px');
-		});
 	});
 	$("#submit-btn-2").click(function(event) {
 		event.preventDefault();
@@ -382,37 +372,45 @@ $("#player_ui_wrapper").slideDown();
 		$(".fp-controls")[0].remove();
 		$(".fp-help")[0].remove();
 	});
+	$("#player_ui_wrapper").slideDown(); 
+	$("#ui_translation_font input").trigger("change");
+	$("#ui_subtitles_font input").trigger("change");
+	$("#player_wrapper").css('margin', '0 auto');
+	$(".fp-fullscreen").click(function(event) {
+		$(".fp-engine").css('max-height', '100%');
+		$(".fp-engine").css('top', '-30px');
+	});
+	
 	$("#clear_new_words").click(function(event) {
 		event.preventDefault();
 		new_words = {};
 		$("#words_list").html("");
 		print_new_words();
 	});
-$("#btnChangeVideo").click(function(event) {
-	$("#form_wrapper").slideDown();
-});
-$("#btnChangeVideo-2").click(function(event) {
-	$("#form_wrapper").slideDown();
-});
-$("#pIfPc").click(function(event) {
-	$(".first_buttons").slideUp();
-	$(".for_pc").slideDown();
-});
-$("#pIfMobile").click(function(event) {
-	$(".first_buttons").slideUp();
-	$(".for_mobile").slideDown();
-});	
-$("#copy_words").click(function(event) {
-	var copyAll = $('#words_list').html();
-	prompt('Скопируйте слова ниже или Ctrl+C', copyAll)
-});	
-
-$("#change_video_and_sub").click(function(event) {
-	//*http://localhost:8080
-	var srcAll = prompt('Введите имя файла без расширения.') ;
-	var srcVideo = 'http://localhost:8080/' + srcAll + '.mp4';
-	var srcSub = 'http://localhost:8080/' + srcAll + '.srt';
-	$("input[name=local_video_mobile]").val(srcVideo);
-	$("input[name=subs_file_mobile]").val(srcSub);
-});	
+	$("#btnChangeVideo").click(function(event) {
+		$("#form_wrapper").slideDown();
 	});
+	$("#btnChangeVideo-2").click(function(event) {
+		$("#form_wrapper").slideDown();
+	});
+	$("#pIfPc").click(function(event) {
+		$(".first_buttons").slideUp();
+		$(".for_pc").slideDown();
+	});
+	$("#pIfMobile").click(function(event) {
+		$(".first_buttons").slideUp();
+		$(".for_mobile").slideDown();
+	});	
+	$("#copy_words").click(function(event) {
+		var copyAll = $('#words_list').html();
+		prompt('Скопируйте слова ниже или Ctrl+C', copyAll)
+	});	
+	$("#change_video_and_sub").click(function(event) {
+		//*http://localhost:8080
+		var srcAll = prompt('Введите имя файла без расширения.') ;
+		var srcVideo = 'http://localhost:8080/' + srcAll + '.mp4';
+		var srcSub = 'http://localhost:8080/' + srcAll + '.srt';
+		$("input[name=local_video_mobile]").val(srcVideo);
+		$("input[name=subs_file_mobile]").val(srcSub);
+	});	
+});
