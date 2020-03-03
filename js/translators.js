@@ -9,17 +9,17 @@ function yandex_translate(text) {
 	$.each(["'s", "n't", "'m", "'re", "'ll", "'ve", "'d"], function(i, val) {
 		text = text.replace(val, "")
 	});
-		$.ajax({
-			type: "POST",
-			url: 'https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=trnsl.1.1.20170205T082217Z.e9de139d8939cd86.0ec4523d349890c4552a732d293cff2e8e5f6e70&text=' + text,
-			success: function(data) {
-				var data = data.text[0]; //первый перевод
-				process_yandex_reply(data, text);
-			},
-			error: function(errorThrown) {
-				alert("Отсутствует интернет-соединение");
-			}
-		});
+	$.ajax({
+		type: "POST",
+		url: 'https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=trnsl.1.1.20170205T082217Z.e9de139d8939cd86.0ec4523d349890c4552a732d293cff2e8e5f6e70&text=' + text,
+		success: function(data) {
+			var data = data.text[0]; //первый перевод
+			process_yandex_reply(data, text);
+		},
+		error: function(errorThrown) {
+			alert("Отсутствует интернет-соединение");
+		}
+	});
 }
 
 function process_yandex_reply(data, text) {
@@ -27,7 +27,7 @@ function process_yandex_reply(data, text) {
 	var res = "";
 
 	if (data.length == 0) {
-		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">Перевода слова не найдено</p>'
+		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">ѕеревода слова не найдено</p>'
 	};
 	if (data.length > 0) {
 		//res += '<a class="btn btn-small btn-success" id="yandex_btn" onclick="hide_urban();">Yandex</a>';
@@ -40,7 +40,27 @@ function process_yandex_reply(data, text) {
 		res += '<div class="urban-data"></div>';
 	};
 
+	add_words_to_db(engText, data);
+	
 	show_translation_yandex(res, data, engText);
+}
+
+function add_words_to_db(engText, ruText){
+	var json = '{"translation":"' + ruText + '"}';
+	$.ajax({
+		type: "PUT",
+		url: 'https://translateplayer-e1b8e.firebaseio.com/' + engText + '.json',
+		contentType: 'application/json; charset=UTF-8',
+		data: json,//name: 'wayne'
+		success: function(data) {
+			//var data = data.text[0]; //первый перевод
+			//process_yandex_reply(data, text);
+			//alert("Слово успешно добавлено в БД")
+		},
+		error: function(errorThrown) {
+			alert("Ошибка при добавлении в БД");
+		}
+	});
 }
 
 function show_translation_yandex(text, data, engText) {
@@ -51,7 +71,7 @@ function show_translation_yandex(text, data, engText) {
 	var old = $("#words_list").html();
 	var left = ($(".myplayer").width() - tr_obj.outerWidth()) / 2;
 
-	$("#words_list").html(old + engText + ":"+ data+ "; ");
+	$("#words_list").html(old + engText + ":"+ data+ "; "); //To sql?
 	tr_obj.css({
 		// bottom: sub_obj.height() + parseFloat(sub_obj.css("bottom")),
 		"max-height": ($(".myplayer").height() - sub_obj.outerHeight() - sub_wrap.height() - parseInt(sub_wrap.css("bottom")) - 2 * parseInt(tr_obj.css("padding-top")) - 2 * parseInt(tr_obj.css("border-top-width"))).toString() + "px",
@@ -86,7 +106,7 @@ function process_urban_reply(data, text) {
 	var list_data_length = data.list.length;
 
 	if (data.tags.length == 0) {
-		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">Перевода слова не найдено</p>'
+		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">ѕеревода слова не найдено</p>'
 	};
 
 	for (var i = 0; i < tags_length; i++) {
