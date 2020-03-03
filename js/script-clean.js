@@ -196,6 +196,13 @@ function init_player_ui() {
 }
 
 //Subtitles
+function resize_subtitle_wrap(factor) {
+	var h = $(".fp-subtitle-wrap").height();
+	var b = parseFloat($(".fp-subtitle").css("bottom"));
+	$(".fp-subtitle-wrap").height(h * factor);
+	$(".fp-subtitle").css("bottom", (b * factor).toString() + "px")
+}
+
 function shift_subtitles(time) { 
 	var player_obj = flowplayer(".myplayer");
 	var shift = time - flowplayer.conf.subtitles_shift;

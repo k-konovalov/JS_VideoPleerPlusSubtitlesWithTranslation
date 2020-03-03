@@ -16,6 +16,9 @@ function yandex_translate(text) {
 				var data = data.text[0]; //первый перевод
 				process_yandex_reply(data, text);
 			},
+			error: function(errorThrown) {
+				alert("Отсутствует интернет-соединение");
+			}
 		});
 }
 
@@ -57,10 +60,6 @@ function show_translation_yandex(text, data, engText) {
 	});
 	tr_obj.html(header + text);
 	tr_obj.show();
-	
-	//Добавление в массив
-	new_words_eng.push(engText);
-	new_words_ru.push(data);
 }
 
 //Urban translation stop
