@@ -37,12 +37,14 @@ flowplayer(
 				change_font_size_relative(".fp-subtitle", factor);
 				change_font_size_relative(".translation", factor);
 				resize_subtitle_wrap(factor)
-			},"fullscreen-exit", function() {
+			},
+			"fullscreen-exit", function() {
 				var factor = flowplayer.conf.player_width / $(window).width();
 				change_font_size_relative(".fp-subtitle", factor);
 				change_font_size_relative(".translation", factor);
 				resize_subtitle_wrap(factor)
-			},"resume", function() {
+			},
+			"resume", function() {
 				$(".flowplayer").removeClass("play-white");
 				$(".translation").hide();
 				remove_words_class("selected");
@@ -50,13 +52,17 @@ flowplayer(
 				remove_words_class("right-clicked");
 				api.paused_by_mouseenter = false;
 				api.elapsed_time.start = api.video.time
-			},"pause", function() {
+			},
+			"pause", function() {
 				update_elapsed_time_time(api.elapsed_time, api.video)
-			},"beforeseek", function() {
+			},
+			"beforeseek", function() {
 				if (!api.paused) update_elapsed_time_time(api.elapsed_time, api.video)
-			},"seek", function() {
+			},
+			"seek", function() {
 				api.elapsed_time.start = api.video.time
-			},"ready", function() {
+			},
+			"ready", function() {
 				api.volume(flowplayer.conf.volume);
 				if (typeof api.subtitles_src !== "undefined") {
 					var timer = setInterval(function() {
@@ -70,7 +76,8 @@ flowplayer(
 					api.elapsed_time.enabled = false;
 					return
 				}
-			},"error", function(e, api, error) {
+			},
+			"error", function(e, api, error) {
 				notify("Player error: " + error.message + ". Elapsed_time " + api.elapsed_time.time);
 				if (error.code > 4) return;
 				var error_buttons = '<div id="error_buttons">' + '<a href="#" id="err-btn-restart" class="btn btn-large btn-success">Перезапустить</a>';
@@ -113,7 +120,8 @@ flowplayer(
 					url = url.replace(/\&engine=\w+/g, "");
 					window.location.href = url + "&engine=html5"
 				})
-		});
+			}
+		);
 
 		//Init actions with subtitles state
 		$(".fp-subtitle").on("mouseenter", function(event) {
@@ -135,9 +143,11 @@ flowplayer(
 			var sel = document.getSelection().toString();
 			if (!sel) return;
 			var text = $.trim(sel).replace(/[\r\n]/g, " ");
+			console.log("Original sentence: " + text);
 			if (!text) return;
-			get_translation(text);
-	});
+			var isWord = false;
+			get_translation(text, isWord);
+		});
 		$(".fp-subtitle").on("mousedown", function(event) {
 			window.getSelection().removeAllRanges()
 		});
@@ -145,11 +155,10 @@ flowplayer(
 			sel = document.getSelection().toString();
 			if (sel) return;
 			text = $(this).text();
-
-			get_translation(text);
+			var isWord = true;
+			get_translation(text, isWord);
 			/*change*/
 		});
-
 		$(".fp-subtitle").on("contextmenu", "span", function(event) {
 			var span = $(this);
 			var text = "";

@@ -1364,5 +1364,26 @@ label {
 }
 
 .is-seeking.flowplayer .fp-ui, .is-loading.flowplayer .fp-ui {
+	
 	background-image: none !important
+}
+
+.word_holder{
+	width: 100%;
+	display: block;
+	float: left;
+	margin: 0 auto;
+	border-bottom: rgba(128, 128, 128, 0.1) solid 1px;
+}
+.word_holder > div{
+	width: 50%;
+	float: left;
+}
+.word_holder > div:first-child{
+	width: 48%;
+	display: block;
+	border-right: rgba(128, 128, 128, 0.1) solid 1px;
+}
+.word_holder > div > p{
+	text-align: center;
 }

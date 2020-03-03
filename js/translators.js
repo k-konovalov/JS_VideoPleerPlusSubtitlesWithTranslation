@@ -1,20 +1,35 @@
 //Yandex
 
-function get_translation(text) {
-	yandex_translate(text);
-}
-
-function yandex_translate(text) {
-	text = text.replace(" ", ",");
+function get_translation(text, isWord) {
 	$.each(["'s", "n't", "'m", "'re", "'ll", "'ve", "'d"], function(i, val) {
 		text = text.replace(val, "")
 	});
+	$.each([",", ".", "!", "?", "...", ","], function(i, val) {
+		text = text.replace(val, "")
+	});
+	
+	console.log("After cleanings: " + text);
+	yandex_translate(text);
+	if(!isWord){
+		var words = text.split(" ");
+		$.each(words, function(i, val) {
+			yandex_translate(words[i]);
+		});
+	};
+}
+
+function yandex_translate(text) {
+	$.each([",", ".", "!", "?", "...", ","], function(i, val) {
+		text = text.replace(val, "")
+	});
+	
 	$.ajax({
 		type: "POST",
 		url: 'https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=trnsl.1.1.20170205T082217Z.e9de139d8939cd86.0ec4523d349890c4552a732d293cff2e8e5f6e70&text=' + text,
 		success: function(data) {
 			var data = data.text[0]; //первый перевод
 			process_yandex_reply(data, text);
+			add_words_to_db(engText,data);
 		},
 		error: function(errorThrown) {
 			alert("Отсутствует интернет-соединение");
@@ -39,28 +54,8 @@ function process_yandex_reply(data, text) {
 		res += '</div>';
 		res += '<div class="urban-data"></div>';
 	};
-
-	add_words_to_db(engText, data);
 	
 	show_translation_yandex(res, data, engText);
-}
-
-function add_words_to_db(engText, ruText){
-	var json = '{"translation":"' + ruText + '"}';
-	$.ajax({
-		type: "PUT",
-		url: 'https://translateplayer-e1b8e.firebaseio.com/' + engText + '.json',
-		contentType: 'application/json; charset=UTF-8',
-		data: json,//name: 'wayne'
-		success: function(data) {
-			//var data = data.text[0]; //первый перевод
-			//process_yandex_reply(data, text);
-			//alert("Слово успешно добавлено в БД")
-		},
-		error: function(errorThrown) {
-			alert("Ошибка при добавлении в БД");
-		}
-	});
 }
 
 function show_translation_yandex(text, data, engText) {
@@ -70,8 +65,18 @@ function show_translation_yandex(text, data, engText) {
 	var header = "";
 	var old = $("#words_list").html();
 	var left = ($(".myplayer").width() - tr_obj.outerWidth()) / 2;
+	var res = old;
+		res += '<div class="word_holder">';
+		res += '<div class="word">';
+		res += engText;
+		res += '</div>';
+		res += '<div class="translated">';
+		res += data;
+		res += '</div>';
+		res += '</div>';
 
-	$("#words_list").html(old + engText + ":"+ data+ "; "); //To sql?
+	$("#words_list").html(res);
+	
 	tr_obj.css({
 		// bottom: sub_obj.height() + parseFloat(sub_obj.css("bottom")),
 		"max-height": ($(".myplayer").height() - sub_obj.outerHeight() - sub_wrap.height() - parseInt(sub_wrap.css("bottom")) - 2 * parseInt(tr_obj.css("padding-top")) - 2 * parseInt(tr_obj.css("border-top-width"))).toString() + "px",
@@ -82,7 +87,20 @@ function show_translation_yandex(text, data, engText) {
 	tr_obj.show();
 }
 
-//Urban translation stop
+function add_words_to_db(engText, ruText){
+	var json = '{"translation":"' + ruText + '"}';
+	$.ajax({
+		type: "PUT",
+		url: 'https://translateplayer-e1b8e.firebaseio.com/user/words/' + engText + '.json',
+		contentType: 'application/json; charset=UTF-8',
+		data: json,
+		error: function(errorThrown) {
+			alert("Ошибка при добавлении в БД");
+		}
+	});
+}
+
+//Urban translation
 
 function urban_translate(text) {
 	text = text.replace(" ", ",");

@@ -68,7 +68,6 @@ $(document).ready(function() {
 
 		flowplayer.conf.subtitles_shift = 0;
 	});
-	
 	$("#ui_translation_font input").trigger("change");
 	$("#ui_subtitles_font input").trigger("change");
 	$(".fp-fullscreen").click(function(event) {
@@ -85,8 +84,12 @@ $(document).ready(function() {
 		$("#form_wrapper").slideDown();
 	});
 	$("#copy_words").click(function(event) {
-		var copyAll = $('#words_list').html();
-		prompt('Скопируйте слова ниже или Ctrl+C', copyAll)
+		var res = "";
+		$('#words_list').each(function(i, val) {
+			res += $(val);
+		});
+		//last work
+		prompt('Скопируйте слова ниже или Ctrl+C', res)
 	});	
 });
 
