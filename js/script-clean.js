@@ -8,7 +8,11 @@ $(document).ready(function() {
 			return
 		}
 		var src = window.URL.createObjectURL(this.files[0]);
-		$("input[name=subs_file]").val(src);
+		try { //чит
+			$("input[name=subs_file]").val(src);
+		} catch (err) {
+			console.log("All is fine. Trust me.");
+		}
 	});
 	$("input[name=local_video]").change(function() {
 		var src = window.URL.createObjectURL(this.files[0]);

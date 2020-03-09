@@ -9,16 +9,16 @@ function get_translation(text, isWord) {
 	});
 	
 	console.log("After cleanings: " + text);
-	yandex_translate(text);
 	if(!isWord){
 		var words = text.split(" ");
 		$.each(words, function(i, val) {
-			yandex_translate(words[i]);
+			yandex_translate(words[i], !isWord);
 		});
 	};
+	yandex_translate(text);
 }
 
-function yandex_translate(text) {
+function yandex_translate(text, isWord) {
 	$.each([",", ".", "!", "?", "...", ","], function(i, val) {
 		text = text.replace(val, "")
 	});
@@ -28,8 +28,8 @@ function yandex_translate(text) {
 		url: 'https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=trnsl.1.1.20170205T082217Z.e9de139d8939cd86.0ec4523d349890c4552a732d293cff2e8e5f6e70&text=' + text,
 		success: function(data) {
 			var data = data.text[0]; //первый перевод
-			process_yandex_reply(data, text);
-			add_words_to_db(engText,data);
+			process_yandex_reply(data, text, isWord);
+			add_words_to_db(text, data);
 		},
 		error: function(errorThrown) {
 			alert("ќтсутствует интернет-соединение");
@@ -37,7 +37,7 @@ function yandex_translate(text) {
 	});
 }
 
-function process_yandex_reply(data, text) {
+function process_yandex_reply(data, text, isWord) {
 	var engText = text;
 	var res = "";
 
@@ -55,10 +55,10 @@ function process_yandex_reply(data, text) {
 		res += '<div class="urban-data"></div>';
 	};
 	
-	show_translation_yandex(res, data, engText);
+	show_translation_yandex(res, data, engText, isWord);
 }
 
-function show_translation_yandex(text, data, engText) {
+function show_translation_yandex(text, data, engText, isWord) {
 	var tr_obj = $(".translation");
 	var sub_obj = $(".fp-subtitle");
 	var sub_wrap = $(".fp-subtitle-wrap");
@@ -68,23 +68,29 @@ function show_translation_yandex(text, data, engText) {
 	var res = old;
 		res += '<div class="word_holder">';
 		res += '<div class="word">';
+		res += '<p>'
 		res += engText;
+		res += '</p>'
 		res += '</div>';
 		res += '<div class="translated">';
+		res += '<p>'
 		res += data;
+		res += '</p>'
 		res += '</div>';
 		res += '</div>';
 
 	$("#words_list").html(res);
 	
-	tr_obj.css({
-		// bottom: sub_obj.height() + parseFloat(sub_obj.css("bottom")),
-		"max-height": ($(".myplayer").height() - sub_obj.outerHeight() - sub_wrap.height() - parseInt(sub_wrap.css("bottom")) - 2 * parseInt(tr_obj.css("padding-top")) - 2 * parseInt(tr_obj.css("border-top-width"))).toString() + "px",
-		"bottom": $(".fp-subtitle").height() + 10,
-		"left": left
-	});
-	tr_obj.html(header + text);
-	tr_obj.show();
+	if(!isWord){
+		tr_obj.css({
+			// bottom: sub_obj.height() + parseFloat(sub_obj.css("bottom")),
+			"max-height": ($(".myplayer").height() - sub_obj.outerHeight() - sub_wrap.height() - parseInt(sub_wrap.css("bottom")) - 2 * parseInt(tr_obj.css("padding-top")) - 2 * parseInt(tr_obj.css("border-top-width"))).toString() + "px",
+			"bottom": $(".fp-subtitle").height() + 10,
+			"left": left
+		});
+		tr_obj.html(header + text);
+		tr_obj.show();
+	}
 }
 
 function add_words_to_db(engText, ruText){
