@@ -4,11 +4,11 @@ $(document).ready(function() {
 	});
 	$("input[name=subs_file]").change(function() {
 		if (this.files[0].size > 4e5) {
-			stop_upxload(1, "Слишком большой файл. Максимальный размер &mdash; 400 Кб");
+			stop_upxload(1, "РЎР»РёС€РєРѕРј Р±РѕР»СЊС€РѕР№ С„Р°Р№Р». РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ &mdash; 400 РљР±");
 			return
 		}
 		var src = window.URL.createObjectURL(this.files[0]);
-		try { //чит
+		try { //С‡РёС‚
 			$("input[name=subs_file]").val(src);
 		} catch (err) {
 			console.log("All is fine. Trust me.");
@@ -93,7 +93,7 @@ $(document).ready(function() {
 			res += $(val);
 		});
 		//last work
-		prompt('Скопируйте слова ниже или Ctrl+C', res)
+		prompt('РЎРєРѕРїРёСЂСѓР№С‚Рµ СЃР»РѕРІР° РЅРёР¶Рµ РёР»Рё Ctrl+C', res)
 	});	
 });
 
@@ -106,22 +106,22 @@ function generate_player_code(video_src,video_type, subs_url) {
 	res += '<div id="player_ui_wrapper">';
 	res += '<div id="player_ui_border">';
 	res += '<div class="player_ui" id="ui_subtitles_shift">';
-	res += '<p>Смещение субтитров</p>';
+	res += '<p>РЎРјРµС‰РµРЅРёРµ СЃСѓР±С‚РёС‚СЂРѕРІ</p>';
 	res += '<div class="input-prepend input-append">';
 	res += '<a class="ui_less btn" href="#"><i class="icon-arrow-left"></i></a>';
 	res += '<input type="text" class="input-mini text-center" size="6" value="0sec">';
 	res += '<a class="ui_more btn" href="#"><i class="icon-arrow-right"></i></a>';
 	res += '</div></div> <!-- player_ui_wrapper -->';
 	res += '<div class="player_ui" id="ui_subtitles_font">';
-	res += '<p>Размер шрифта субтитров</p>';
+	res += '<p>Р Р°Р·РјРµСЂ С€СЂРёС„С‚Р° СЃСѓР±С‚РёС‚СЂРѕРІ</p>';
 	res += '<div class="input-prepend input-append">';
 	res += '<a class="ui_less btn" href="#"><i class="icon-minus"></i></a>';
 	res += '<input type="text" class="input-mini text-center" size="4" value="100%">';
 	res += '<a class="ui_more btn" href="#"><i class="icon-plus"></i></a>';
 	res += '</div></div>';
-	res += '<div class="player_ui" id="ui_subtitles_position"><p>Положение</p><div class="input-prepend input-append"><a class="ui_less btn" href="#"><i class="icon-arrow-down"></i></a><a class="ui_more btn" href="#"><i class="icon-arrow-up"></i></a></div></div>';
-	res += '<div class="player_ui" id="ui_subtitles_opacity"><p>Прозрачность</p><div class="input-prepend input-append"><a class="ui_less btn" href="#"><i class="icon-minus"></i></a><a class="ui_more btn" href="#"><i class="icon-plus"></i></a></div></div>';
-	res += '<div class="player_ui" id="ui_subtitles_presence"><p>Показывать субтитры</p><select><option value="always_subs" selected>Всегда</option><option value="paused_subs">При паузе</option><option value="no_subs">Без субтитров</option></select></div>';
+	res += '<div class="player_ui" id="ui_subtitles_position"><p>РџРѕР»РѕР¶РµРЅРёРµ</p><div class="input-prepend input-append"><a class="ui_less btn" href="#"><i class="icon-arrow-down"></i></a><a class="ui_more btn" href="#"><i class="icon-arrow-up"></i></a></div></div>';
+	res += '<div class="player_ui" id="ui_subtitles_opacity"><p>РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ</p><div class="input-prepend input-append"><a class="ui_less btn" href="#"><i class="icon-minus"></i></a><a class="ui_more btn" href="#"><i class="icon-plus"></i></a></div></div>';
+	res += '<div class="player_ui" id="ui_subtitles_presence"><p>РџРѕРєР°Р·С‹РІР°С‚СЊ СЃСѓР±С‚РёС‚СЂС‹</p><select><option value="always_subs" selected>Р’СЃРµРіРґР°</option><option value="paused_subs">РџСЂРё РїР°СѓР·Рµ</option><option value="no_subs">Р‘РµР· СЃСѓР±С‚РёС‚СЂРѕРІ</option></select></div>';
 	res += '<div></div>';
 	res += '</div></div> <!-- player_ui_wrapper -->';
 
@@ -198,7 +198,7 @@ function init_player_ui() {
 		change_subs_position(step)
 	});
 
-	//$("#player_ui_wrapper").slideDown(); настройки скрыты
+	//$("#player_ui_wrapper").slideDown(); РЅР°СЃС‚СЂРѕР№РєРё СЃРєСЂС‹С‚С‹
 	$("#player_ui_wrapper").hide()
 }
 

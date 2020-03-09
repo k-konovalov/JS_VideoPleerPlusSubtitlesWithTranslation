@@ -80,22 +80,22 @@ flowplayer(
 			"error", function(e, api, error) {
 				notify("Player error: " + error.message + ". Elapsed_time " + api.elapsed_time.time);
 				if (error.code > 4) return;
-				var error_buttons = '<div id="error_buttons">' + '<a href="#" id="err-btn-restart" class="btn btn-large btn-success">Перезапустить</a>';
-				error_buttons += '<a href="#" id="err-btn-close" class="btn btn-large btn-info">Закрыть</a>';
+				var error_buttons = '<div id="error_buttons">' + '<a href="#" id="err-btn-restart" class="btn btn-large btn-success">РџРµСЂРµР·Р°РїСѓСЃС‚РёС‚СЊ</a>';
+				error_buttons += '<a href="#" id="err-btn-close" class="btn btn-large btn-info">Р—Р°РєСЂС‹С‚СЊ</a>';
 				if (error.code == 2) {
 					if (window.location.href.indexOf("engine=flash") !== -1) {
-						error_buttons += "<div>Вернуться в html5-плеер:</div>";
-						error_buttons += '<a href="#" id="err-btn-html5" class="btn btn-info"><span>Открыть через html5-плеер</span></a>'
+						error_buttons += "<div>Р’РµСЂРЅСѓС‚СЊСЃСЏ РІ html5-РїР»РµРµСЂ:</div>";
+						error_buttons += '<a href="#" id="err-btn-html5" class="btn btn-info"><span>РћС‚РєСЂС‹С‚СЊ С‡РµСЂРµР· html5-РїР»РµРµСЂ</span></a>'
 					} else {
-						error_buttons += "<div>Если эта ошибка возникает очень часто и доставляет неудобства, попробуйте открыть это видео через flash-плеер:</div>";
-						error_buttons += '<a href="#" id="err-btn-flash" class="btn btn-info"><span>Открыть через flash-плеер</span></a>'
+						error_buttons += "<div>Р•СЃР»Рё СЌС‚Р° РѕС€РёР±РєР° РІРѕР·РЅРёРєР°РµС‚ РѕС‡РµРЅСЊ С‡Р°СЃС‚Рѕ Рё РґРѕСЃС‚Р°РІР»СЏРµС‚ РЅРµСѓРґРѕР±СЃС‚РІР°, РїРѕРїСЂРѕР±СѓР№С‚Рµ РѕС‚РєСЂС‹С‚СЊ СЌС‚Рѕ РІРёРґРµРѕ С‡РµСЂРµР· flash-РїР»РµРµСЂ:</div>";
+						error_buttons += '<a href="#" id="err-btn-flash" class="btn btn-info"><span>РћС‚РєСЂС‹С‚СЊ С‡РµСЂРµР· flash-РїР»РµРµСЂ</span></a>'
 					}
 				} else if (error.code == 3) {
-					error_buttons += "<div>В разделе &laquo;Помощь&raquo; описано решение для вашей проблемы :</div>";
-					error_buttons += '<a href="page/help#problems" class="btn btn-info"><span>Известные проблемы и решения</span></a>'
+					error_buttons += "<div>Р’ СЂР°Р·РґРµР»Рµ &laquo;РџРѕРјРѕС‰СЊ&raquo; РѕРїРёСЃР°РЅРѕ СЂРµС€РµРЅРёРµ РґР»СЏ РІР°С€РµР№ РїСЂРѕР±Р»РµРјС‹ :</div>";
+					error_buttons += '<a href="page/help#problems" class="btn btn-info"><span>РР·РІРµСЃС‚РЅС‹Рµ РїСЂРѕР±Р»РµРјС‹ Рё СЂРµС€РµРЅРёСЏ</span></a>'
 				} else if (error.code == 4) {
-					error_buttons += "<div><strong>Возможные причины появления этой ошибки:</strong></div>";
-					error_buttons += "<ul><li>видеохостинг, с которого вы открыли видео, не поддерживается плеером</li><li>ссылка на видео устарела (в этом случае вам нужно заново открыть видео из каталога)</li>"
+					error_buttons += "<div><strong>Р’РѕР·РјРѕР¶РЅС‹Рµ РїСЂРёС‡РёРЅС‹ РїРѕСЏРІР»РµРЅРёСЏ СЌС‚РѕР№ РѕС€РёР±РєРё:</strong></div>";
+					error_buttons += "<ul><li>РІРёРґРµРѕС…РѕСЃС‚РёРЅРі, СЃ РєРѕС‚РѕСЂРѕРіРѕ РІС‹ РѕС‚РєСЂС‹Р»Рё РІРёРґРµРѕ, РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РїР»РµРµСЂРѕРј</li><li>СЃСЃС‹Р»РєР° РЅР° РІРёРґРµРѕ СѓСЃС‚Р°СЂРµР»Р° (РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РІР°Рј РЅСѓР¶РЅРѕ Р·Р°РЅРѕРІРѕ РѕС‚РєСЂС‹С‚СЊ РІРёРґРµРѕ РёР· РєР°С‚Р°Р»РѕРіР°)</li>"
 				}
 				error_buttons += "</div>";
 				$("#error_buttons").remove();

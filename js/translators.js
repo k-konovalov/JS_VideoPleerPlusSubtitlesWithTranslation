@@ -27,12 +27,12 @@ function yandex_translate(text, isWord) {
 		type: "POST",
 		url: 'https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=trnsl.1.1.20170205T082217Z.e9de139d8939cd86.0ec4523d349890c4552a732d293cff2e8e5f6e70&text=' + text,
 		success: function(data) {
-			var data = data.text[0]; //первый перевод
+			var data = data.text[0]; //РїРµСЂРІС‹Р№ РїРµСЂРµРІРѕРґ
 			process_yandex_reply(data, text, isWord);
 			add_words_to_db(text, data);
 		},
 		error: function(errorThrown) {
-			alert("Отсутствует интернет-соединение");
+			alert("РћС‚СЃСѓС‚СЃС‚РІСѓРµС‚ РёРЅС‚РµСЂРЅРµС‚-СЃРѕРµРґРёРЅРµРЅРёРµ");
 		}
 	});
 }
@@ -42,7 +42,7 @@ function process_yandex_reply(data, text, isWord) {
 	var res = "";
 
 	if (data.length == 0) {
-		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">ѕеревода слова не найдено</p>'
+		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">С•РµСЂРµРІРѕРґР° СЃР»РѕРІР° РЅРµ РЅР°Р№РґРµРЅРѕ</p>'
 	};
 	if (data.length > 0) {
 		//res += '<a class="btn btn-small btn-success" id="yandex_btn" onclick="hide_urban();">Yandex</a>';
@@ -101,7 +101,7 @@ function add_words_to_db(engText, ruText){
 		contentType: 'application/json; charset=UTF-8',
 		data: json,
 		error: function(errorThrown) {
-			alert("Ошибка при добавлении в БД");
+			alert("РћС€РёР±РєР° РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РІ Р‘Р”");
 		}
 	});
 }
@@ -130,7 +130,7 @@ function process_urban_reply(data, text) {
 	var list_data_length = data.list.length;
 
 	if (data.tags.length == 0) {
-		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">ѕеревода слова не найдено</p>'
+		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">С•РµСЂРµРІРѕРґР° СЃР»РѕРІР° РЅРµ РЅР°Р№РґРµРЅРѕ</p>'
 	};
 
 	for (var i = 0; i < tags_length; i++) {
