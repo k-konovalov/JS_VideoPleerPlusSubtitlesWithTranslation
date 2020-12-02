@@ -1,5 +1,3 @@
-//Yandex
-
 function get_translation(text, isWord) {
 	$.each(["'s", "n't", "'m", "'re", "'ll", "'ve", "'d"], function(i, val) {
 		text = text.replace(val, "")
@@ -12,24 +10,24 @@ function get_translation(text, isWord) {
 	if(!isWord){
 		var words = text.split(" ");
 		$.each(words, function(i, val) {
-			yandex_translate(words[i], !isWord);
+			google_translate(words[i], !isWord);
 		});
 	};
-	yandex_translate(text);
+	google_translate(text);
 }
 
-function yandex_translate(text, isWord) {
+function google_translate(text, isWord) {
 	$.each([",", ".", "!", "?", "...", ","], function(i, val) {
 		text = text.replace(val, "")
 	});
 	
 	$.ajax({
-		type: "POST",
-		url: 'https://translate.yandex.net/api/v1.5/tr.json/translate?lang=en-ru&key=trnsl.1.1.20170205T082217Z.e9de139d8939cd86.0ec4523d349890c4552a732d293cff2e8e5f6e70&text=' + text,
+		type: "GET",
+		url: 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyBcUTss9FFo1qMhTRxswhxwZyONolZwyF4&target=ru&q=' + text,
 		success: function(data) {
-			var data = data.text[0]; //первый перевод
-			process_yandex_reply(data, text, isWord);
-			add_words_to_db(text, data);
+			var res = data.data.translations[0].translatedText; //первый перевод
+			process_google_reply(res, text, isWord);
+			add_words_to_db(text, res);
 		},
 		error: function(errorThrown) {
 			alert("Отсутствует интернет-соединение");
@@ -37,12 +35,12 @@ function yandex_translate(text, isWord) {
 	});
 }
 
-function process_yandex_reply(data, text, isWord) {
+function process_google_reply(data, text, isWord) {
 	var engText = text;
 	var res = "";
 
 	if (data.length == 0) {
-		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">ѕеревода слова не найдено</p>'
+		res = '<p class="eng">' + text.replace(",", " ") + '</p><p class="notfound">Перевода слова не найдено</p>'
 	};
 	if (data.length > 0) {
 		//res += '<a class="btn btn-small btn-success" id="yandex_btn" onclick="hide_urban();">Yandex</a>';
@@ -55,10 +53,10 @@ function process_yandex_reply(data, text, isWord) {
 		res += '<div class="urban-data"></div>';
 	};
 	
-	show_translation_yandex(res, data, engText, isWord);
+	show_translation_google(res, data, engText, isWord);
 }
 
-function show_translation_yandex(text, data, engText, isWord) {
+function show_translation_google(text, data, engText, isWord) {
 	var tr_obj = $(".translation");
 	var sub_obj = $(".fp-subtitle");
 	var sub_wrap = $(".fp-subtitle-wrap");
