@@ -2,31 +2,33 @@ $(document).ready(function() {
 	$("#subs_upload_submit").click(function(event) {
 		$("#subs_upload_process").show()
 	});
-	$("input[name=subs_file]").change(function() {
+	$("input[name=local_subs]").change(function() {	
 		if (this.files[0].size > 4e5) {
-			stop_upxload(1, "Слишком большой файл. Максимальный размер &mdash; 400 Кб");
+			alert("Слишком большой файл. Максимальный размер: 400 Кб");
 			return
 		}
-		var src = window.URL.createObjectURL(this.files[0]);
-		try { //чит
-			$("input[name=subs_file]").val(src);
-		} catch (err) {
-			console.log("All is fine. Trust me.");
-		}
+		
+		if(!checkExtension(this.files[0].name,'.srt')){return}
+		video_attrs.subs_url = window.URL.createObjectURL(this.files[0]);
+		$("input[name=subs_file]").val(this.files[0].name);
 	});
 	$("input[name=local_video]").change(function() {
-		var src = window.URL.createObjectURL(this.files[0]);
-		$("input[name=video_src]").val(src)
+		if(!checkExtension(this.files[0].name,'mp4|mkv')){return}
+		video_attrs.video_src = window.URL.createObjectURL(this.files[0]);
+		$("input[name=video_src]").val(this.files[0].name);
 	});
 	$("input[name=video_src]").change(function() {
-		video_attrs = {}
+		//video_attrs = {}
+	});
+	$("input[name=subs_file]").change(function() {
+		//video_attrs = {}
 	});
 	$("#submit-btn").click(function(event) {
-		if ($("input[name=video_src]").val() !== "") {
-			video_attrs.video_src = $("input[name=video_src]").val();
-			video_attrs.subs_url = $("input[name=subs_file]").val();
-		} else return
-
+		if ($("input[name=video_src]").val() == "" && $("input[name=subs_file]").val() == "") {
+			alert ("Пустые поля");
+			return;
+		} 
+		
 		event.preventDefault();
 
 		if (flowplayer()) {
@@ -96,6 +98,17 @@ $(document).ready(function() {
 		prompt('Скопируйте слова ниже или Ctrl+C', res)
 	});	
 });
+
+function checkExtension(fileName, extension){
+		let regexp = new RegExp(extension);
+		let searchRes = fileName.search(regexp);
+
+		if (searchRes == -1) {
+			alert("Не является файлом формата " + extension);
+			return;
+		}
+	return true;
+}
 
 function generate_player_code(video_src,video_type, subs_url) {
 	var res = '<div class="myplayer is-splash play-white">' + "\n";
@@ -201,6 +214,8 @@ function init_player_ui() {
 	//$("#player_ui_wrapper").slideDown(); настройки скрыты
 	$("#player_ui_wrapper").hide()
 }
+
+
 
 //Subtitles
 function resize_subtitle_wrap(factor) {

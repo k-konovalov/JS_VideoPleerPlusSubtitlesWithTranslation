@@ -35,6 +35,20 @@ function google_translate(text, isWord) {
 	});
 }
 
+function testTranslation(){
+	$.ajax({
+		type: "GET",
+		url: 'https://translation.googleapis.com/language/translate/v2?key=AIzaSyBcUTss9FFo1qMhTRxswhxwZyONolZwyF4&target=ru&q=' + "test",
+		success: function(data) {
+			var res = data.data.translations[0].translatedText; //первый перевод
+			alert("test: " + res);
+		},
+		error: function(errorThrown) {
+			alert("Отсутствует интернет-соединение");
+		}
+	});
+}
+
 function process_google_reply(data, text, isWord) {
 	var engText = text;
 	var res = "";
